@@ -10,19 +10,6 @@ const mongoose = require('mongoose');
 
 const {TestType, TestModel, TestMutationType} = require ('./schema/Test')
 
-const testData = new TestModel()
-testData.name = "Test1"
-testData.options = [{
-  label: 'FirstChoice',
-  weight: 50
-},
-  {
-  label: 'SecondChoice',
-  weight: 50
-}]
-
-testData.save()
-
 mongoose.connect('mongodb://localhost', {useMongoClient: true});
 
 // This is the Root Query
