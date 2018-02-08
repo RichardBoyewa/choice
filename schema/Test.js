@@ -120,18 +120,20 @@ const TestMutationType = new GraphQLObjectType({
         const instance = await TestModel.findOne({name: name})
 
         const decision = Math.floor(Math.random() * 101)
-
         console.log(decision)
 
-        let cumulatedCursor = instance.options[0].weight
+        /* for instance: */
+        /* 0%----option1-- 20% --option2----30%-----option3-----------100% */
+
+        let cumulatedCursor = 0
 
         let selectedOption
 
         instance.options.forEach((option, index) => {
+          cumulatedCursor += option.weight
           if (!selectedOption && decision <= cumulatedCursor) {
             selectedOption = option
           }
-          cumulatedCursor += option.weight
         })
 
         await StatisticModel.findOneAndUpdate({optionId: selectedOption._id}, {$inc : {'decisionCount' : 1}})
