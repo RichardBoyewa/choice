@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors');
 const graphqlHTTP = require('express-graphql');
 const {
   GraphQLList,
@@ -37,6 +38,7 @@ const ChoiceSchema = new GraphQLSchema({
 });
 
 var app = express();
+app.use(cors())
 app.use('/choice', graphqlHTTP({
   schema: ChoiceSchema,
   graphiql: true
