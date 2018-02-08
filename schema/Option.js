@@ -6,6 +6,7 @@ let {
   GraphQLObjectType,
 } = require('graphql');
 
+const { StatisticModel } = require('./Statistics');
 
 const OptionType = new GraphQLObjectType({
   name: "Option",
@@ -13,7 +14,14 @@ const OptionType = new GraphQLObjectType({
   fields: () => ({
     id: {type: new GraphQLNonNull(GraphQLString)},
     label: {type: new GraphQLNonNull(GraphQLString)},
-    weight: {type: new GraphQLNonNull(GraphQLInt)}
+    weight: {type: new GraphQLNonNull(GraphQLInt)},
+    decisionCount: {
+      type: GraphQLInt,
+      resolve: async (option) => {
+        const stat = await StatisticModel.findOne({optionId: option._id})
+        return stat.decisionCount
+      }
+    }
   })
 });
 

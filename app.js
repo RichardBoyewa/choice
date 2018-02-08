@@ -10,7 +10,7 @@ const mongoose = require('mongoose');
 
 const {TestType, TestModel, TestMutationType} = require ('./schema/Test')
 
-mongoose.connect('mongodb://localhost', {useMongoClient: true});
+mongoose.connect('mongodb://localhost');
 
 // This is the Root Query
 const ChoiceQueryRootType = new GraphQLObjectType({
