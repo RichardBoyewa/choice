@@ -6,7 +6,7 @@ let {
   GraphQLObjectType,
 } = require('graphql');
 
-const { StatisticModel } = require('./Statistics');
+const { StatisticModel } = require('./Statistic');
 
 const OptionType = new GraphQLObjectType({
   name: "Option",

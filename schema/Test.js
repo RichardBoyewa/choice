@@ -9,7 +9,8 @@ const {
 const { OptionType, OptionInputType } = require ('./Option')
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const { StatisticModel } = require('./Statistics');
+const { StatisticModel } = require('./Statistic');
+const { DecisionModel } = require('./Decision');
 
 const TestSchema = new Schema({
   name: String,
@@ -52,6 +53,17 @@ const TestType = new GraphQLObjectType({
       }
     }
   })
+});
+
+const DecisionTestType = new GraphQLObjectType({
+    name: "DecisionTest",
+    description: "This type represents a return test when a decision is asked",
+    fields: () => ({
+        id: {type: new GraphQLNonNull(GraphQLString)},
+        name: {type: new GraphQLNonNull(GraphQLString)},
+        options: {type: new GraphQLList(OptionType)},
+        uuid: {type: GraphQLString},
+    })
 });
 
 const TestInputType = new GraphQLInputObjectType({
@@ -110,17 +122,23 @@ const TestMutationType = new GraphQLObjectType({
       }
     },
     takeDecision: {
-      type: TestType,
+      type: DecisionTestType,
       description: 'Take a decision and return a selected value',
       args: {
-        name: { type: GraphQLString }
+        name: { type: GraphQLString },
+        uuid: { type: GraphQLString }
       },
-      resolve: async (value, { name }) => {
+      resolve: async (value, { name, uuid }) => {
+        if (uuid) {
+          const previousDecision = await DecisionModel.findOne({testName: name, uuid: uuid})
+          if (previousDecision)
+            return {id: previousDecision.testId, name: name, uuid: uuid, options: [previousDecision.selectedOption]}
+        }
+
         //Get instance
         const instance = await TestModel.findOne({name: name})
 
         const decision = Math.floor(Math.random() * 101)
-        console.log(decision)
 
         /* for instance: */
         /* 0%----option1-- 20% --option2----30%-----option3-----------100% */
@@ -138,7 +156,9 @@ const TestMutationType = new GraphQLObjectType({
 
         await StatisticModel.findOneAndUpdate({optionId: selectedOption._id}, {$inc : {'decisionCount' : 1}})
 
-        return {id: instance._id, name: name, options: [selectedOption]}
+        const freshDecision = await new DecisionModel({testId: instance._id, testName: instance.name, selectedOption: selectedOption}).save()
+
+        return {id: instance._id, name: name, options: [selectedOption], uuid: freshDecision.uuid}
 
       }
     }
