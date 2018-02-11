@@ -1,5 +1,6 @@
 const {
   GraphQLList,
+  GraphQLBoolean,
   GraphQLInt,
   GraphQLNonNull,
   GraphQLString,
@@ -66,6 +67,17 @@ const DecisionTestType = new GraphQLObjectType({
     })
 });
 
+const ConvertedDecisionTestType = new GraphQLObjectType({
+    name: "ConvertedDecisionTest",
+    description: "This type represents a return a converted decision",
+    fields: () => ({
+        uuid: {type: new GraphQLNonNull(GraphQLString)},
+        testName: {type: new GraphQLNonNull(GraphQLString)},
+        testId: {type: new GraphQLNonNull(GraphQLString)},
+        converted: {type: new GraphQLNonNull(GraphQLBoolean)}
+    })
+});
+
 const TestInputType = new GraphQLInputObjectType({
   name: 'TestInput',
   fields: () => ({
@@ -106,7 +118,6 @@ const TestMutationType = new GraphQLObjectType({
       },
       resolve: async (value, { name, option }) => {
         const instance = await TestModel.find({name: name})
-        console.log(instance.options)
 
         //Before pushing anything we check if weight is okay
         let sum = 0
@@ -161,6 +172,24 @@ const TestMutationType = new GraphQLObjectType({
         const freshDecision = await new DecisionModel({testId: instance._id, testName: instance.name, selectedOption: selectedOption, uuid: uuid}).save()
 
         return {id: instance._id, name: name, options: [selectedOption], uuid: freshDecision.uuid}
+
+      }
+    },
+    trackConversion: {
+      type: ConvertedDecisionTestType,
+      description: 'Track conversion for a particular user and test',
+      args: {
+          name: { type: GraphQLString },
+          uuid: { type: GraphQLString }
+      },
+      resolve: async (value, { name, uuid }) => {
+        const previousDecision = await DecisionModel.findOne({testName: name, uuid: uuid})
+        if (previousDecision && !previousDecision.converted) {
+          previousDecision.converted = true
+          await previousDecision.save()
+          await StatisticModel.findOneAndUpdate({optionId: previousDecision.selectedOption._id}, {$inc : {'conversionCount': 1}})
+        }
+        return {testId: previousDecision.testId, testName: previousDecision.testName, converted: previousDecision.converted, uuid: previousDecision.uuid}
 
       }
     }

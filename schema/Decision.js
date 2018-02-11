@@ -1,5 +1,5 @@
 const {
-  GraphQLList,
+  GraphQLBoolean,
   GraphQLNonNull,
   GraphQLString,
   GraphQLObjectType,
@@ -13,6 +13,7 @@ const DecisionSchema = new Schema({
   uuid: String,
   testId: Schema.Types.ObjectId,
   testName: String,
+  converted: Boolean,
   selectedOption: {}
 });
 
@@ -33,6 +34,7 @@ const DecisionType = new GraphQLObjectType({
     uuid: {type: new GraphQLNonNull(GraphQLString)},
     testId: {type: new GraphQLNonNull(GraphQLString)},
     testName: {type: new GraphQLNonNull(GraphQLString)},
+    converted: {type: new GraphQLNonNull(GraphQLBoolean)},
     selectedOption: {type: OptionType},
   })
 });
