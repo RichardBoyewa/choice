@@ -2,6 +2,7 @@ const {
   GraphQLNonNull,
   GraphQLString,
   GraphQLObjectType,
+  GraphQLInt,
 } = require('graphql');
 const { OptionType, OptionInputType } = require ('./Option')
 const mongoose = require('mongoose');
@@ -10,6 +11,7 @@ const Schema = mongoose.Schema;
 const StatisticSchema = new Schema({
   optionId: Schema.Types.ObjectId,
   decisionCount: Number,
+  displayCount: Number,
   conversionCount: Number
 });
 
@@ -21,6 +23,7 @@ const StatisticType = new GraphQLObjectType({
   fields: () => ({
     optionId: {type: new GraphQLNonNull(GraphQLString)},
     decisionCount: {type: new GraphQLNonNull(GraphQLInt)},
+    displayCount: {type: new GraphQLNonNull(GraphQLInt)},
     conversionCount: {type: new GraphQLNonNull(GraphQLInt)}
   })
 });

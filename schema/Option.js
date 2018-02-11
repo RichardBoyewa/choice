@@ -21,6 +21,13 @@ const OptionType = new GraphQLObjectType({
         const stat = await StatisticModel.findOne({optionId: option._id})
         return stat.decisionCount
       }
+    },
+    displayCount: {
+      type: GraphQLInt,
+      resolve: async (option) => {
+        const stat = await StatisticModel.findOne({optionId: option._id})
+        return stat.displayCount
+      }
     }
   })
 });

@@ -16,7 +16,7 @@ const DecisionSchema = new Schema({
   selectedOption: {}
 });
 
-DecisionSchema.index({ uuid: 1, testId: 1 });
+DecisionSchema.index({ uuid: 1, testName: 1 });
 
 DecisionSchema.pre('save', function(next) {
   this.uuid = this.uuid || uuid()

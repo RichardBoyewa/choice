@@ -131,8 +131,10 @@ const TestMutationType = new GraphQLObjectType({
       resolve: async (value, { name, uuid }) => {
         if (uuid) {
           const previousDecision = await DecisionModel.findOne({testName: name, uuid: uuid})
-          if (previousDecision)
+          if (previousDecision) {
+            await StatisticModel.findOneAndUpdate({optionId: previousDecision.selectedOption._id}, {$inc : {'displayCount' : 1}})
             return {id: previousDecision.testId, name: name, uuid: uuid, options: [previousDecision.selectedOption]}
+          }
         }
 
         //Get instance
@@ -154,9 +156,9 @@ const TestMutationType = new GraphQLObjectType({
           }
         })
 
-        await StatisticModel.findOneAndUpdate({optionId: selectedOption._id}, {$inc : {'decisionCount' : 1}})
+        await StatisticModel.findOneAndUpdate({optionId: selectedOption._id}, {$inc : {'decisionCount' : 1, 'displayCount': 1}})
 
-        const freshDecision = await new DecisionModel({testId: instance._id, testName: instance.name, selectedOption: selectedOption}).save()
+        const freshDecision = await new DecisionModel({testId: instance._id, testName: instance.name, selectedOption: selectedOption, uuid: uuid}).save()
 
         return {id: instance._id, name: name, options: [selectedOption], uuid: freshDecision.uuid}
 
