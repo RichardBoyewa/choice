@@ -18,7 +18,8 @@ const TestSchema = new Schema({
   options: [
     {
       label: String,
-      weight: Number
+      weight: Number,
+      elected: { type: Boolean, default: false }
     }
   ]
 });
@@ -28,6 +29,20 @@ TestSchema.post('save', async (test) => {
   test.options.forEach( async (option) => {
     await new StatisticModel({optionId: option._id, decisionCount: 0}).save()
   })
+
+});
+
+TestSchema.pre('save', function(next)  {
+  let found = false
+  this.options.forEach( (option) => {
+    if (found && option.elected) {
+      throw new Error('Mh. We cannot have more than one elected option')
+    }
+    if (!found && option.elected) {
+      found = true
+    }
+  })
+  next()
 
 });
 
@@ -140,12 +155,11 @@ const TestMutationType = new GraphQLObjectType({
         uuid: { type: GraphQLString }
       },
       resolve: async (value, { name, uuid }) => {
-        if (uuid) {
-          const previousDecision = await DecisionModel.findOne({testName: name, uuid: uuid})
-          if (previousDecision) {
-            await StatisticModel.findOneAndUpdate({optionId: previousDecision.selectedOption._id}, {$inc : {'displayCount' : 1}})
-            return {id: previousDecision.testId, name: name, uuid: uuid, options: [previousDecision.selectedOption]}
-          }
+
+        const previousDecision = await DecisionModel.findOne({testName: name, uuid: uuid})
+        if (previousDecision) {
+          await StatisticModel.findOneAndUpdate({optionId: previousDecision.selectedOption._id}, {$inc : {'displayCount' : 1}})
+          return {id: previousDecision.testId, name: name, uuid: uuid, options: [previousDecision.selectedOption]}
         }
 
         //Get instance
@@ -161,6 +175,9 @@ const TestMutationType = new GraphQLObjectType({
         let selectedOption
 
         instance.options.forEach((option, index) => {
+          if (option.elected)
+            selectedOption = option
+
           cumulatedCursor += option.weight
           if (!selectedOption && decision <= cumulatedCursor) {
             selectedOption = option
@@ -190,6 +207,28 @@ const TestMutationType = new GraphQLObjectType({
           await StatisticModel.findOneAndUpdate({optionId: previousDecision.selectedOption._id}, {$inc : {'conversionCount': 1}})
         }
         return {testId: previousDecision.testId, testName: previousDecision.testName, converted: previousDecision.converted, uuid: previousDecision.uuid}
+
+      }
+    },
+    toggleElectOption: {
+      type: TestType,
+      description: 'Stop test and say it will be the only returned option for this test.',
+      args: {
+        optionId: { type: GraphQLString },
+        testId: { type: GraphQLString }
+      },
+      resolve: async (value, { optionId, testId }) => {
+        const test = await TestModel.findById(testId)
+
+        test.options.forEach( async (option) => {
+          if (option._id.toString() === optionId) {
+            option.elected = !option.elected
+          } else {
+            option.elected = false
+          }
+        })
+
+        return await test.save()
 
       }
     }

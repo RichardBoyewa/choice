@@ -1,6 +1,7 @@
 let {
   GraphQLString,
   GraphQLNonNull,
+  GraphQLBoolean,
   GraphQLInt,
   GraphQLInputObjectType,
   GraphQLObjectType,
@@ -15,6 +16,7 @@ const OptionType = new GraphQLObjectType({
     id: {type: new GraphQLNonNull(GraphQLString)},
     label: {type: new GraphQLNonNull(GraphQLString)},
     weight: {type: new GraphQLNonNull(GraphQLInt)},
+    elected: {type: new GraphQLNonNull(GraphQLBoolean)},
     decisionCount: {
       type: GraphQLInt,
       resolve: async (option) => {
