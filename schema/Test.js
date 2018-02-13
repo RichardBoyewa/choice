@@ -14,7 +14,7 @@ const { StatisticModel } = require('./Statistic');
 const { DecisionModel } = require('./Decision');
 
 const TestSchema = new Schema({
-  name: String,
+  name: { type: String, unique: true },
   options: [
     {
       label: String,

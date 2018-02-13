@@ -11,7 +11,7 @@ const mongoose = require('mongoose');
 
 const {TestType, TestModel, TestMutationType} = require ('./schema/Test')
 
-mongoose.connect('mongodb://localhost');
+mongoose.connect('mongodb://'+process.env.MONGO_URL);
 
 // This is the Root Query
 const ChoiceQueryRootType = new GraphQLObjectType({
@@ -43,5 +43,7 @@ app.use('/choice', graphqlHTTP({
   schema: ChoiceSchema,
   graphiql: true
 }));
-app.listen(4000);
-console.log('Running a GraphQL API server at localhost:4000/graphql');
+
+app.listen(process.env.PORT || 80);
+
+console.log('Running a GraphQL API server at localhost:'+process.env.PORT || 80+'/choice');
