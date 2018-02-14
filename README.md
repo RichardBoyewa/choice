@@ -11,17 +11,22 @@ Choice works using _tests_. A _test_ is simply defined by a name and the availab
 offers. An option is simply a variant for your test. A _test_ could have as many options as you 
 want.
 
-An _option_ contains a _label_ and a _weight_. When specifying a weight, choice will try to 
+An _option_ contains a _label_ and a _weight_. When specifying a weight, Choice will try to 
 deliver your options regarding the weight you provided.
 
- When you request Choice to take a decision, it will return a selected option, and record inside a
- statistics object the number of **displays** (how many time Choice returned this option), 
- **decisions** (how many time Choice decided to choose this option) and **conversions** (how many 
- time a user converted with this option)
+Once you created a test, you can request Choice to take a decision. Choice will then return the 
+most appropriate option.
  
- At any time, you can **elect** an option. The elected option will **always** be choosen for 
- future requests. **decisions** and **displays** will be incremented when selecting an elected 
- option.
+Regarding conversion performances, you can tell Choice to **elect** an option. The elected 
+option will **always** be choosen for future _take decision_ requests.
+ 
+Choice provides statistics for your tests. Each time a decision will be taken or a conversion 
+tracked, Choice will record for each option the number of **displays** (how many time this 
+option has been returned), **decisions** (how many time this option has been taken) and 
+**conversions** (how many time a user converted with this option). These statistics are provided 
+as GraphQL fields and you can add them into your schema.
+ 
+ 
  
  ## Quick Start
  ### Using Docker
@@ -123,7 +128,7 @@ deliver your options regarding the weight you provided.
     }
   }
   ```
-  #### takeDecision
+  #### trackConversion
   Track a conversion for a given test and user. This will record that this option for this user 
   has been a success.
   
