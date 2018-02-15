@@ -41,9 +41,9 @@ var app = express();
 app.use(cors())
 app.use('/choice', graphqlHTTP({
   schema: ChoiceSchema,
-  graphiql: true
+  graphiql: (process.env.NODE_ENV === "development")
 }));
 
 app.listen(process.env.PORT || 80);
 
-console.log('Running a GraphQL API server at localhost:'+process.env.PORT || 80+'/choice');
+console.log('Running Choice API server at localhost:'+process.env.PORT || 80+'/choice');

@@ -44,6 +44,7 @@ as GraphQL fields and you can add them into your schema.
      environment:
        - PORT=80
        - MONGO_URL=choice-database
+       - NODE_ENV=development|production
    choice-database:
      image: "mongo:3.6.0"
  ```
