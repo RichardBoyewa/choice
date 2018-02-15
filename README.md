@@ -49,7 +49,7 @@ as GraphQL fields and you can add them into your schema.
      image: "mongo:3.6.0"
  ```
   ### Without Docker
-  1. Make sure you have a running and accessible MongoDB database (test)
+  1. Make sure you have a running and accessible MongoDB database
   1. Clone this repo, navigate into it, and run `PORT=80 MONGO_URL=your-mongodb-endpoint node app
   .js`
   
@@ -110,7 +110,7 @@ as GraphQL fields and you can add them into your schema.
   }
   ```
   #### takeDecision
-  Take a decision for a given test. You will receive in return an uuid (auto generated if you do 
+  Take a decision for a given test. You will receive in return a uuid (auto generated if you do 
   not provide one), and the options object containing the selected label. For future requests 
   made by the same user, make sure to store the generated uuid, and to include this uuid in all 
   future mutation calls. Choice will remember its decision and return the same selected value for
@@ -147,7 +147,7 @@ as GraphQL fields and you can add them into your schema.
   ```
   
   #### toggleElectOption
-  Elect and option inside a test using optionId and testId. Once the option is elected, you can 
+  Elect an option inside a test using optionId and testId. Once the option is elected, you can 
   deny this option by calling the mutation again using the same arguments. When elected, the 
   option will always be choosen by Choice **for all request to takeDecision that does not provide 
   an uuid (which means that its a new user) -**. If you provide an uuid, a previous decision 
