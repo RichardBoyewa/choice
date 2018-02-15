@@ -166,7 +166,7 @@ as GraphQL fields and you can add them into your schema.
   }
   ```
   
-  #UI
+  # UI
   Provided screenshot shows web application that allows you to monitor each test
   performance, and elect option if you want. Please follow [https://github.com/Sleashe/choice-ui](https://github.com/Sleashe/choice-ui)
   
