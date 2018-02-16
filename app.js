@@ -11,7 +11,7 @@ const mongoose = require('mongoose');
 
 const {TestType, TestModel, TestMutationType} = require ('./schema/Test')
 
-mongoose.connect('mongodb://'+process.env.MONGO_URL);
+mongoose.connect('mongodb://'+process.env.MONGO_HOST+':'+process.env.MONGO_PORT+'/'+process.env.MONGO_DATABASE);
 
 // This is the Root Query
 const ChoiceQueryRootType = new GraphQLObjectType({
